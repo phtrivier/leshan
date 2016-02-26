@@ -30,11 +30,27 @@ function updateClient(updated, clients) {
     }, []);
 }
 
+// Does a client have a local IP address ? 
+function hasLocalAddress(client) {
+	var res = false;
+	if (client.address) {
+		var tokens = client.address.split(":");
+		if (tokens && tokens.length > 0) {
+			var ip = tokens[0];
+			if (ip === "127.0.0.1" || ip === "localhost") {
+				res = true;
+			}
+		}
+	}
+	return res;
+} 
+
 lwClientControllers.controller('ClientListCtrl', [
     '$scope',
     '$http',
     '$location',
-    function ClientListCtrl($scope, $http,$location) {
+    '$window',
+    function ClientListCtrl($scope, $http, $location, $window) {
 
         // update navbar
         angular.element("#navbar").children().removeClass('active');
@@ -43,7 +59,7 @@ lwClientControllers.controller('ClientListCtrl', [
         // free resource when controller is destroyed
         $scope.$on('$destroy', function(){
             if ($scope.eventsource){
-                $scope.eventsource.close()
+                $scope.eventsource.close();
             }
         });
 
@@ -52,6 +68,19 @@ lwClientControllers.controller('ClientListCtrl', [
             $location.path('/clients/' + client.endpoint);
         };
 
+        $scope.showGeoLoc = function(client,$event) {
+            var address = client.address;
+            if (address) {
+                var tokens = address.split(":");
+                if (tokens && tokens.length > 0) {
+                    var ip = client.address.split(":")[0];
+                    var url = "https://geoiptool.com/en/?ip=" + ip;
+                    $window.open(url);
+                }
+            }
+            $event.stopPropagation();
+        };
+        
         // the tooltip message to display for a client (all standard attributes, plus additional ones)
         $scope.clientTooltip = function(client) {
             var standard = ["Lifetime: " + client.lifetime + "s",
@@ -123,6 +152,9 @@ lwClientControllers.controller('ClientListCtrl', [
                 });
             };
             $scope.eventsource.addEventListener('DEREGISTRATION', deregisterCallback, false);
+            
+            $scope.hasLocalAddress = hasLocalAddress;
+            
         });
 }]);
 
