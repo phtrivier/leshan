@@ -21,7 +21,7 @@
 				<td>{{client.lastUpdate | date:'medium'}}</td>
 				<td><i class="glyphicon glyphicon-info-sign" tooltip-html-unsafe="{{clientTooltip(client)}}"></i></td>
 				<td><span ng-class="{hidden: client.secure == false}" class="glyphicon glyphicon-lock" tooltip-html-unsafe="Communication over DTLS"></span>
-                                    <span ng-class="{hidden : hasLocalAddress(client)}" class="glyphicon glyphicon-globe" ng-click="showGeoLoc(client,$event)"></span>
+                                    <span ng-class="{hidden : !hasGeoLocAddress(client)}" class="glyphicon glyphicon-globe" ng-click="showGeoLoc(client,$event)"></span>
 
                                 </td>
 			</tr>

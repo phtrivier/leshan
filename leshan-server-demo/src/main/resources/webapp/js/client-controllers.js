@@ -30,12 +30,13 @@ function updateClient(updated, clients) {
     }, []);
 }
 
-// Does a client have a local IP address ? 
-function hasLocalAddress(client) {
+// Does a client have a geolocalizable IP v4 address ?
+// This excluses localhost, 127.0.0.1, and any IP v6 address
+function hasGeoLocAddress(client) {
 	var res = false;
 	if (client.address) {
 		var tokens = client.address.split(":");
-		if (tokens && tokens.length > 0) {
+		if (tokens && tokens.length === 2) {
 			var ip = tokens[0];
 			if (ip === "127.0.0.1" || ip === "localhost") {
 				res = true;
@@ -153,7 +154,7 @@ lwClientControllers.controller('ClientListCtrl', [
             };
             $scope.eventsource.addEventListener('DEREGISTRATION', deregisterCallback, false);
             
-            $scope.hasLocalAddress = hasLocalAddress;
+            $scope.hasGeoLocAddress = hasGeoLocAddress;
             
         });
 }]);
